@@ -1,0 +1,13 @@
+# Secretos
+.env
+*.tfvars
+!*.tfvars.example
+
+# Estado de Terraform: contiene la configuracion aplicada y puede incluir datos sensibles.
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+
+# Datos persistentes de LocalStack
+volume/

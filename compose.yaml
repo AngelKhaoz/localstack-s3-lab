@@ -1,0 +1,24 @@
+# LocalStack para el laboratorio de S3 seguro.
+# El puerto se publica SOLO en 127.0.0.1: no queda expuesto a la red local.
+services:
+  localstack:
+    container_name: localstack-s3-lab
+    image: localstack/localstack-pro:latest
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      # Solo S3: arranca mas rapido y reduce superficie.
+      SERVICES: s3
+      DEBUG: "0"
+      # El token NUNCA va escrito aqui. Se lee del archivo .env (ignorado por git).
+      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:?Falta LOCALSTACK_AUTH_TOKEN en .env}
+      # Permite que el dashboard web (https://app.localstack.cloud) consulte esta
+      # instancia. Sin esto el navegador bloquea la peticion por politica CORS.
+      EXTRA_CORS_ALLOWED_ORIGINS: "https://app.localstack.cloud"
+      # Conserva los datos entre reinicios del contenedor.
+      PERSISTENCE: "1"
+    volumes:
+      - "./volume:/var/lib/localstack"
+    # Sin bloque healthcheck a proposito: la imagen de LocalStack ya define el suyo
+    # y consulta /_localstack/health por dentro. Un healthcheck propio basado en
+    # curl falla porque la imagen no incluye ese binario (exit 127).
